@@ -1,0 +1,27 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="4" author="Maxim Yarmol">
+        <createTable tableName="conversion_log">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="source_filename" type="VARCHAR(255)"/>
+            <column name="source_mime_type" type="VARCHAR(100)"/>
+            <column name="converted_to" type="VARCHAR(50)" defaultValue="PDF"/>
+            <column name="status" type="VARCHAR(50)"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="conversion_log"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"
+                                 constraintName="fk_conversion_log_user"/>
+    </changeSet>
+
+</databaseChangeLog>

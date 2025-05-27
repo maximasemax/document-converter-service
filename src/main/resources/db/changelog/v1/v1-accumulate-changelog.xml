@@ -12,7 +12,10 @@
     http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.0.xsd
     ">
 
-    <include file = "db/changelog/v1/123" />
+    <include file = "db/changelog/v1/v1-create-users-table.xml" />
+    <include file = "db/changelog/v1/v1-create-roles-table.xml" />
+    <include file = "db/changelog/v1/v1-create-user-roles-table.xml" />
+    <include file = "db/changelog/v1/v1-create-conversion-log-table.xml" />
 
 
 </databaseChangeLog>

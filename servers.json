@@ -1,0 +1,13 @@
+[
+  {
+    "Name": "Convertor App",
+    "Group": "Servers",
+    "Host": "db",
+    "Port": 5432,
+    "MaintenanceDB": "convertor_app",
+    "Username": "postgres",
+    "SSLMode": "prefer",
+    "PassFile": "postgres",
+    "Comment": ""
+  }
+]

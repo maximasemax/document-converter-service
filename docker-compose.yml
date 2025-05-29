@@ -1,0 +1,51 @@
+services:
+
+  db:
+    image: postgres:15
+    container_name: converter-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: convertor_app
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - '15432:5432'
+
+  pgadmin:
+    image: dpage/pgadmin4:7.3
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - '5050:80'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+      - ./pgadmin-init/servers.json:/pgadmin4/servers.json:ro
+    depends_on:
+      - db
+
+
+  app:
+    build: .
+    container_name: converter-app
+    restart: on-failure
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/convertor_app
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_LIQUIBASE_CHANGE-LOG: classpath:db/changelog/main-changelog.xml
+    volumes:
+      - documents:/documents
+    ports:
+      - '8081:8080'
+    depends_on:
+      - db
+
+volumes:
+  db_data:
+  pgadmin_data:
+  documents:

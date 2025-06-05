@@ -19,8 +19,8 @@ import java.util.Map;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class ConversionControllerImpl {
-    private final ConversionService conversionService;
 
+    private final ConversionService conversionService;
 
     @PostMapping(
             value = "/convert",
@@ -30,7 +30,8 @@ public class ConversionControllerImpl {
     public ResponseEntity<byte[]> convert(
             @RequestPart("file") MultipartFile file,
             Authentication auth) {
-
+        ResponseEntity<byte[]> emptyCheck = checkEmptyFile(file);
+        if (emptyCheck != null) return emptyCheck;
         byte[] pdf = conversionService.convertToPdf(file, auth);
 
         String filename = file.getOriginalFilename() != null
@@ -45,6 +46,7 @@ public class ConversionControllerImpl {
 
     /**
      * Конвертирует файл DOCX в PDF
+     *
      * @param file документ в формате DOCX
      * @return ResponseEntity с PDF файлом
      */
@@ -55,7 +57,8 @@ public class ConversionControllerImpl {
     )
     public ResponseEntity<byte[]> convertDocxToPdf(
             @RequestPart("file") MultipartFile file, Authentication auth) {
-
+        ResponseEntity<byte[]> emptyCheck = checkEmptyFile(file);
+        if (emptyCheck != null) return emptyCheck;
         try {
             byte[] pdf = conversionService.convertToPdf(file, auth);
             String filename = file.getOriginalFilename() != null
@@ -71,6 +74,7 @@ public class ConversionControllerImpl {
 
     /**
      * Конвертирует файл DOC в PDF
+     *
      * @param file документ в формате DOC
      * @return ResponseEntity с PDF файлом
      */
@@ -81,7 +85,8 @@ public class ConversionControllerImpl {
     )
     public ResponseEntity<byte[]> convertDocToPdf(
             @RequestPart("file") MultipartFile file, Authentication auth) {
-
+        ResponseEntity<byte[]> emptyCheck = checkEmptyFile(file);
+        if (emptyCheck != null) return emptyCheck;
         try {
             byte[] pdf = conversionService.convertToPdf(file, auth);
             String filename = file.getOriginalFilename() != null
@@ -97,6 +102,7 @@ public class ConversionControllerImpl {
 
     /**
      * Конвертирует файл ODT в PDF
+     *
      * @param file документ в формате ODT
      * @return ResponseEntity с PDF файлом
      */
@@ -107,7 +113,8 @@ public class ConversionControllerImpl {
     )
     public ResponseEntity<byte[]> convertOdtToPdf(
             @RequestPart("file") MultipartFile file, Authentication auth) {
-
+        ResponseEntity<byte[]> emptyCheck = checkEmptyFile(file);
+        if (emptyCheck != null) return emptyCheck;
         try {
             byte[] pdf = conversionService.convertToPdf(file, auth);
             String filename = file.getOriginalFilename() != null
@@ -123,6 +130,7 @@ public class ConversionControllerImpl {
 
     /**
      * Конвертирует файл RTF в PDF
+     *
      * @param file документ в формате RTF
      * @return ResponseEntity с PDF файлом
      */
@@ -133,7 +141,8 @@ public class ConversionControllerImpl {
     )
     public ResponseEntity<byte[]> convertRtfToPdf(
             @RequestPart("file") MultipartFile file, Authentication auth) {
-
+        ResponseEntity<byte[]> emptyCheck = checkEmptyFile(file);
+        if (emptyCheck != null) return emptyCheck;
         try {
             byte[] pdf = conversionService.convertToPdf(file, auth);
             String filename = file.getOriginalFilename() != null
@@ -149,6 +158,7 @@ public class ConversionControllerImpl {
 
     /**
      * Конвертирует файл XLSX в PDF
+     *
      * @param file документ в формате XLSX
      * @return ResponseEntity с PDF файлом
      */
@@ -159,7 +169,8 @@ public class ConversionControllerImpl {
     )
     public ResponseEntity<byte[]> convertXlsxToPdf(
             @RequestPart("file") MultipartFile file, Authentication auth) {
-
+        ResponseEntity<byte[]> emptyCheck = checkEmptyFile(file);
+        if (emptyCheck != null) return emptyCheck;
         try {
             byte[] pdf = conversionService.convertToPdf(file, auth);
             String filename = file.getOriginalFilename() != null
@@ -175,6 +186,7 @@ public class ConversionControllerImpl {
 
     /**
      * Конвертирует файл PPTX в PDF
+     *
      * @param file документ в формате PPTX
      * @return ResponseEntity с PDF файлом
      */
@@ -186,7 +198,8 @@ public class ConversionControllerImpl {
 
     public ResponseEntity<byte[]> convertPptxToPdf(
             @RequestPart("file") MultipartFile file, Authentication auth) {
-
+        ResponseEntity<byte[]> emptyCheck = checkEmptyFile(file);
+        if (emptyCheck != null) return emptyCheck;
         try {
             byte[] pdf = conversionService.convertToPdf(file, auth);
             String filename = file.getOriginalFilename() != null
@@ -202,6 +215,7 @@ public class ConversionControllerImpl {
 
     /**
      * Конвертирует файл ODP в PDF
+     *
      * @param file документ в формате ODP
      * @return ResponseEntity с PDF файлом
      */
@@ -212,7 +226,8 @@ public class ConversionControllerImpl {
     )
     public ResponseEntity<byte[]> convertOdpToPdf(
             @RequestPart("file") MultipartFile file, Authentication auth) {
-
+        ResponseEntity<byte[]> emptyCheck = checkEmptyFile(file);
+        if (emptyCheck != null) return emptyCheck;
         try {
             byte[] pdf = conversionService.convertToPdf(file, auth);
             String filename = file.getOriginalFilename() != null
@@ -226,6 +241,16 @@ public class ConversionControllerImpl {
         }
     }
 
+    /**
+     * Обрабатывает исключения, возникающие при конвертации документа,
+     * и формирует корректный HTTP-ответ с сообщением об ошибке в формате JSON.
+     *
+     * @param e        исключение, возникшее при конвертации
+     * @param fileType строка, описывающая тип обрабатываемого файла (например, "DOCX", "XLSX")
+     * @return ResponseEntity с телом ошибки в виде JSON и соответствующим HTTP-статусом:
+     * - 400 Bad Request при ошибке типа IllegalArgumentException (например, неверный формат файла)
+     * - 500 Internal Server Error для всех остальных исключений
+     */
     private ResponseEntity<byte[]> handleConversionError(Exception e, String fileType) {
         if (e instanceof IllegalArgumentException) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -234,5 +259,19 @@ public class ConversionControllerImpl {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(Map.of("error", "Internal server error", "message", "An error occurred while processing the " + fileType + " file. Please try again.").toString().getBytes());
         }
+    }
+
+    /**
+     * Проверка, что файл не пустой.
+     * Если файл пустой, возвращает ResponseEntity с ошибкой,
+     * иначе — возвращает null.
+     */
+    private ResponseEntity<byte[]> checkEmptyFile(MultipartFile file) {
+        if (file == null || file.isEmpty() || file.getSize() == 0) {
+            String message = "Ошибка: загруженный файл пустой или отсутствует.";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(message.getBytes());
+        }
+        return null;
     }
 }

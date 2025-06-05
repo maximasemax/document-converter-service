@@ -8,6 +8,7 @@
     "Username": "postgres",
     "SSLMode": "prefer",
     "PassFile": "postgres",
+    "ConnectNow": true,
     "Comment": ""
   }
 ]
